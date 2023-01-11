@@ -1,2 +1,2 @@
-# Schottky---simulator
-Matlab - Simulator memristor with Schottky barrier
+# Memristor---simulator
+Matlab - Memristor simulator
