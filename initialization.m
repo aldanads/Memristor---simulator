@@ -89,6 +89,7 @@ nj=size(Grid_S,2);
 %%%%%%%%%%%%%%%%%%%% Initialize the defects %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  
 distribution=2;
+
 %% Kind of distribution %% 
 
 % distribution=1 --> Uniform rows
