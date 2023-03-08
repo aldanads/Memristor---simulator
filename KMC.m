@@ -9,7 +9,7 @@
 %% Purpose: This function is the kinetic Monte Carlo algorithm. 
 %% This algorithm is used to select the occurring events.
 
-function [Grid_S,time,Vs_ij,prob]=KMC(Grid_S,phy_const,Vs_ij,ex,ey,ActE,T,time,parameters)
+function [Grid_S,time,Vs_ij,prob]=KMC(Grid_S,phy_const,Vs_ij,ex,ey,ActE,T,time,parameters,delta_V)
 
 %Time max for step -> The event with bigger time step
 time_max=0;
@@ -75,6 +75,7 @@ for i=1:size(Vs_ij,1)
     %% Time for at least one occurring event
     time(2)=-log(rand)/sum(TR);
     
+    if delta_V ~= 0
     if time(2)>delta_t
         time(2)=-log(rand)/TR(s);
         
@@ -85,6 +86,7 @@ for i=1:size(Vs_ij,1)
     %The event with bigger time step
     if time(2)>time_max
        time_max=time(2); 
+    end
     end
     
     P=1-exp(-TR(s)*time(2));

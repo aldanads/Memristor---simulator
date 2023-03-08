@@ -1,6 +1,6 @@
 
 
-function [T]=SolveHeat(f,phy_const,Grid_S,parameters,time)
+function [T]=SolveHeat(f,phy_const,Grid_S,parameters,time,T)
 
 heat_equation_act=parameters(23);
 
@@ -37,7 +37,7 @@ eps=0.1;
 [alpha]=alpha_matrix(nx,ny,Grid_S,alpha_MoS2,alpha_Mo);
 
 % Temperature matrix
-[T]=Temp_matrix(nx,ny,T_ambient);
+%[T]=Temp_matrix(nx,ny,T_ambient);
 
 % Dirichtlet boundary conditions
 [T]=dirichlet(T,T_top_electrode,T_bottom_electrode);

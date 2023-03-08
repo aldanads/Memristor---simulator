@@ -17,7 +17,8 @@ for n_sim=2:max_sim
 
 [Grid_S,phy_const,ActE,Nparticles,Vs_ij,parameters,direction_vac,direction_phy_pl,direction_data,res_fit_parameters,screening_fit_parameters,resistance_limits,den_res]=initialization(n_sim);
 
-[V_initial,T_ambient,time,delta_t,delta_V,Vmax,Vmin,n_RS,square_size,v_resistance,v_density_Vs,v_total_res,v_current,v_time,voltage,v_temperature,R_ratio,V_set_reset,cont_SET_RESET,j,i,tmax,v_curr_map,v_den_map,v_ey,v_res_map,u]=variables_counters(parameters,Grid_S);
+[V_initial,time,delta_t,delta_V,Vmax,Vmin,n_RS,square_size,v_resistance,v_density_Vs,v_total_res,v_current,v_time,voltage,v_temperature,R_ratio,V_set_reset,cont_SET_RESET,j,i,tmax,v_curr_map,v_den_map,v_ey,v_res_map,u,T]=variables_counters(parameters,Grid_S);
+
 
 % Number of RS cycles
 for cycle=1:n_RS
@@ -32,6 +33,26 @@ for s=1:2
 carry_on=true;
 
 while (carry_on)
+
+    %% ACTIVATE AND DESACTIVE ANNEALING AND VOLTAGE RAMP EXPERIMENT
+    %% STOP ANNEALING WHEN THE RESISTANCE DECREASE A SPECIFIC AMOUNT 
+    % parameters(24)=experiment(1);
+
+    if parameters(24) == 1 % Heat experiment
+        delta_V = 0;
+        parameters(24) = 11; % Heat experiment on
+        heat_equation = 0;
+    elseif parameters(24) == 2 % Ramp experiment
+        delta_V = parameters(6);
+        T_ambient = parameters(3);
+        T = ones(size(Grid_S,1),size(Grid_S,2)) * T_ambient;
+        parameters(20) = T_ambient; % T top electrode
+        parameters(21) = T_ambient; % T bottom electrode
+        heat_equation = parameters(23);
+        parameters(24) = 22; % Ramp experiment on
+        i = 1; % Start voltage ramp from 0
+    end
+
 V=V_initial+(i-1)*delta_V;
 tmax=tmax+delta_t;
 V, j
@@ -46,7 +67,6 @@ v_den_map(:,:,j)=density_Vs;
 %% Resistivity
 [resistance_step,v_resistance,v_total_res]=resistance_calculation(density_Vs,parameters,res_fit_parameters,resistance_limits,j,v_resistance,v_total_res);
 v_res_map(:,:,j)=resistance_step;
-
 %% Current
 [v_current,current_mapping,f]=current(voltage,v_total_res,j,v_current,v_resistance,resistance_step,Grid_S,parameters,phy_const);
 v_curr_map(:,:,j)=current_mapping;
@@ -54,19 +74,15 @@ v_curr_map(:,:,j)=current_mapping;
 [u,ex,ey,screening_j]=SolvePotentialAndField(Grid_S,phy_const,Vs_ij,parameters,V,density_Vs,resistance_step,screening_fit_parameters,u);
 v_ey(:,:,j)=ey;
 %% Heat equation
-heat_equation=parameters(23);
-if heat_equation>1
-[T]=SolveHeat(f,phy_const,Grid_S,parameters,time);
-else
-T_ambient = parameters(3);
-T=ones(size(Grid_S))*T_ambient;
+if heat_equation>=1
+[T]=SolveHeat(f,phy_const,Grid_S,parameters,time,T);
 end
 v_temperature(j,1)=mean(mean(T));
 v_temperature(j,2)=max(max(T));
 v_temperature(j,2)
 
 %% KMC algorithm
-[Grid_S,time,Vs_ij,prob]=KMC(Grid_S,phy_const,Vs_ij,ex,ey,ActE,T,time,parameters);
+[Grid_S,time,Vs_ij,prob]=KMC(Grid_S,phy_const,Vs_ij,ex,ey,ActE,T,time,parameters,delta_V);
 
 
 end
@@ -75,6 +91,14 @@ switch s
     
     % Ramp voltage increases until max --> Then decreases until min
     case 1
+
+        % When the resistance degradate that amount, we stop the annealing
+        % experiment and start the voltage ramp exp
+        % parameters(26) = degradation level
+        if (v_total_res(j) <= v_total_res(1)*parameters(26)) && (parameters(24) == 11 || parameters(24) == 1)
+        parameters(24) = 2; % experiment(1)
+        end
+
         if V>=Vmax
         i=1;
         delta_V=-delta_V;
@@ -160,14 +184,15 @@ R_ratio(8,7)=std(abs(R_ratio(7,1:m/2-1)-R_ratio(7,2:m/2)));
 
 end
 
-function [V_initial,T_ambient,time,delta_t,delta_V,Vmax,Vmin,n_RS,square_size,v_resistance,v_density_Vs,v_total_res,v_current,v_time,voltage,v_temperature,R_ratio,V_set_reset,cont_SET_RESET,j,i,tmax,v_curr_map,v_den_map,v_ey,v_res_map,u]=variables_counters(parameters,Grid_S)
+function [V_initial,time,delta_t,delta_V,Vmax,Vmin,n_RS,square_size,v_resistance,v_density_Vs,v_total_res,v_current,v_time,voltage,v_temperature,R_ratio,V_set_reset,cont_SET_RESET,j,i,tmax,v_curr_map,v_den_map,v_ey,v_res_map,u,T]=variables_counters(parameters,Grid_S)
 
 ni=size(Grid_S,1);
 nj=size(Grid_S,2);
 
 V_initial=parameters(2);
 u=zeros(ni,nj); % Electric potential
-T_ambient=parameters(3);
+T_experiment=parameters(25);
+T = ones(ni,nj) * T_experiment;
 time(1)=parameters(4);
 time(2)=0;
 delta_t=parameters(5);

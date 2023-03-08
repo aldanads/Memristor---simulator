@@ -50,7 +50,7 @@ theta=atan(hy/hx);
 % Careful! --> Use 3,4,6,7,8
 % 2 is too small
 % We need x axis even. 
-square_size=8;
+square_size=6;
 
 % It is important that the number of squares to calculate the density fit
 % well with the simulation domain
@@ -119,7 +119,7 @@ if distribution==2
 mean=0.3;
 standard_deviation=0.2;
 %half_damaged_region=(2+0.5*n_sim)*1E-9;
-half_damaged_region=(2+0.5*8)*1E-9;
+half_damaged_region=(2+0.5*4)*1E-9;
 
 %Skewing parameter and kurtosis
 skew=1.2;
@@ -256,7 +256,7 @@ alpha_MoS2=KMoS2/(ro_MoS2*C_esp_MoS2);
 %alpha_Mo=5.43E-5; ---> Thermal diffusivity for bulk Mo
 alpha_Mo=KMo/(ro_Mo*C_esp_Mo);
 %% Factor for decreasing the heat source
-quenching_heat=1/100; % The substrate and the electrodes are huge, it might be higher
+quenching_heat=1/10; % The substrate and the electrodes are huge, it might be higher
 %% Activate heat equation
 % 2 Time-dependent heat equation: https://www.youtube.com/watch?v=V00p-TgQML0https://www.youtube.com/watch?v=V00p-TgQML0
 %% Time-dependent heat equation --> It doesn't work! --> Because it doesn't fulfill the condition: Courant–Friedrichs–Lewy
@@ -293,16 +293,24 @@ V_initial=0;
 
 % Temperature (K)
 T_ambient=300;
-T_top_electrode=300;
-T_bottom_electrode=300;
+T_experiment = 600;
+T_top_electrode=T_experiment;
+T_bottom_electrode=T_experiment;
+
+% Degradation level of the resistance --> 0.1 means a degradation of 90%
+degradation_level = 0.9;
+% Type of experiment: Thermal annealing: thermal - experiment = 1
+% Voltage ramp: ramp - experiment = 2
+
+experiment = 2;
 
 % Time (s)
 time=0;
 % Delta time (s)
 delta_t=1;
 % Delta V (V)
-%delta_V=0.714;
-delta_V=2.1;
+delta_V=0.714;
+%delta_V=2.1;
 % Vmax during RESET (V)
 Vmax=35;
 % Vmin during SET (V)
@@ -455,9 +463,12 @@ parameters(20)=T_top_electrode;
 parameters(21)=T_bottom_electrode;
 parameters(22)=quenching_heat;
 parameters(23)=heat_equation;
+parameters(24)=experiment;
+parameters(25) = T_experiment;
+parameters(26) = degradation_level; 
 
 %%%%%%%%%%%%%%%%% Saving --> properties %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-destiny_direction='C:\Users\aldanads\OneDrive - TCDUD.onmicrosoft.com\2D device simulator project\Publications\Failure mechanism - thermal\Failure mechanism\';
+destiny_direction='C:\Users\aldanads\OneDrive - TCDUD.onmicrosoft.com\2D device simulator project\Publications\Failure mechanism - thermal\Failure mechanism\Test\';
 folder_name=strcat(num2str(parameters(10)),'RS_Sim_',num2str(n_sim));
 [direction_vac,direction_phy_pl,direction_data]=save_files(destiny_direction,folder_name);
 
@@ -472,7 +483,7 @@ folder_name=strcat(num2str(parameters(10)),'RS_Sim_',num2str(n_sim));
 % Advanced Functional Materials, 29(25), 1901106. 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Movements
-mov_actE=2.13;
+mov_actE=2.297;
 % Double vacancy
 doub_mov=4.149;
 
@@ -704,26 +715,38 @@ ActE(6)=doub_mov;
         direction_data=strcat(destiny_direction,'\',folder_name,'\Data\');
         mkdir(direction_data,'Program');
         
+        path = strcat(direction_data,'Program\initialization.m');
         % Save the code
-        direction_f=strcat(direction_data,'Program\initialization.m');
-        save(direction_f);
-        % save(direction_f,-ascii); funciona?
-        direction_f=strcat(direction_data,'Program\hex_grid.m');
-        save(direction_f);
-        direction_f=strcat(direction_data,'Program\density_row.m');
-        save(direction_f);
-        direction_f=strcat(direction_data,'Program\KMC.m');
-        save(direction_f);
-        direction_f=strcat(direction_data,'Program\plot_graphs.m');
-        save(direction_f);
-        direction_f=strcat(direction_data,'Program\seed_defects.m');
-        save(direction_f);
-        direction_f=strcat(direction_data,'Program\simulator_core.m');
-        save(direction_f);
-        direction_f=strcat(direction_data,'Program\SolvePotentialAndField.m');
-        save(direction_f);
-        direction_f=strcat(direction_data,'Program\pearspdf.m');
-        save(direction_f);
+        copyfile('initialization.m', path)
+        %% Finish 
+        %copyfile hex_grid.m strcat(direction_data,'Program\hex_grid.m')
+        %copyfile density_row.m strcat(direction_data,'Program\density_row.m')
+        %copyfile KMC.m strcat(direction_data,'Program\KMC.m')
+        %copyfile plot_graphs.m strcat(direction_data,'Program\plot_graphs.m')
+        %copyfile seed_defects.m strcat(direction_data,'Program\seed_defects.m')
+        %copyfile simulator_core.m strcat(direction_data,'Program\simulator_core.m')
+        %copyfile SolvePotentialAndField.m strcat(direction_data,'Program\SolvePotentialAndField.m')
+        %copyfile pearspdf.m strcat(direction_data,'Program\pearspdf.m')
+
+            
+        %direction_f=strcat(direction_data,'Program\initialization.m');
+        %save(direction_f);
+        %direction_f=strcat(direction_data,'Program\hex_grid.m');
+        %save(direction_f);
+        %direction_f=strcat(direction_data,'Program\density_row.m');
+        %save(direction_f);
+        %direction_f=strcat(direction_data,'Program\KMC.m');
+        %save(direction_f);
+        %direction_f=strcat(direction_data,'Program\plot_graphs.m');
+        %save(direction_f);
+        %direction_f=strcat(direction_data,'Program\seed_defects.m');
+        %save(direction_f);
+        %direction_f=strcat(direction_data,'Program\simulator_core.m');
+        %save(direction_f);
+        %direction_f=strcat(direction_data,'Program\SolvePotentialAndField.m');
+        %save(direction_f);
+        %direction_f=strcat(direction_data,'Program\pearspdf.m');
+        %save(direction_f);
           
     end
 
