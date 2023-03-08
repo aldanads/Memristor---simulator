@@ -16,12 +16,12 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-function [u,ex,ey,screening_j]=SolvePotentialAndField(Grid_S,phy_const,Vs_ij,parameters,V,density_Vs,resistance_step,screening_fit_parameters)
+function [u,ex,ey,screening_j]=SolvePotentialAndField(Grid_S,phy_const,Vs_ij,parameters,V,density_Vs,resistance_step,screening_fit_parameters,u)
 
 ni=size(Grid_S,1);
 nj=size(Grid_S,2);
 %Electril potential
-u=zeros(ni,nj);
+%u=zeros(ni,nj);
 
 num=round((ni*nj)^(1/2));
 
@@ -51,6 +51,7 @@ Const(2)=h1_2;
 Const(3)=h2_2;
 
 %% Algorithm
+steps = 0;
 
 while lt(cont,100)
      u2=u;
@@ -74,7 +75,7 @@ while lt(cont,100)
         end
         % Check convergence
         [cont]=checkf(u,u2,tol);
-    
+      steps = steps + 1;
 end
 
 % The screening factor depends on the concentration of defects. So

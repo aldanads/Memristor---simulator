@@ -12,12 +12,12 @@
 %This is necessary to obtain different random numbers for each session of MATLAB
 rng('shuffle','twister');
 
-max_sim=1;
-for n_sim=1:max_sim
+max_sim=2;
+for n_sim=2:max_sim
 
 [Grid_S,phy_const,ActE,Nparticles,Vs_ij,parameters,direction_vac,direction_phy_pl,direction_data,res_fit_parameters,screening_fit_parameters,resistance_limits,den_res]=initialization(n_sim);
 
-[V_initial,T_ambient,time,delta_t,delta_V,Vmax,Vmin,n_RS,square_size,v_resistance,v_density_Vs,v_total_res,v_current,v_time,voltage,v_temperature,R_ratio,V_set_reset,cont_SET_RESET,j,i,tmax,v_curr_map,v_den_map,v_ey,v_res_map]=variables_counters(parameters,Grid_S);
+[V_initial,T_ambient,time,delta_t,delta_V,Vmax,Vmin,n_RS,square_size,v_resistance,v_density_Vs,v_total_res,v_current,v_time,voltage,v_temperature,R_ratio,V_set_reset,cont_SET_RESET,j,i,tmax,v_curr_map,v_den_map,v_ey,v_res_map,u]=variables_counters(parameters,Grid_S);
 
 % Number of RS cycles
 for cycle=1:n_RS
@@ -31,7 +31,7 @@ for s=1:2
 
 carry_on=true;
 
-while (carry_on && j<25)
+while (carry_on)
 V=V_initial+(i-1)*delta_V;
 tmax=tmax+delta_t;
 V, j
@@ -51,14 +51,15 @@ v_res_map(:,:,j)=resistance_step;
 [v_current,current_mapping,f]=current(voltage,v_total_res,j,v_current,v_resistance,resistance_step,Grid_S,parameters,phy_const);
 v_curr_map(:,:,j)=current_mapping;
 %% Solve Poisson equation and electric field
-[u,ex,ey,screening_j]=SolvePotentialAndField(Grid_S,phy_const,Vs_ij,parameters,V,density_Vs,resistance_step,screening_fit_parameters);
+[u,ex,ey,screening_j]=SolvePotentialAndField(Grid_S,phy_const,Vs_ij,parameters,V,density_Vs,resistance_step,screening_fit_parameters,u);
 v_ey(:,:,j)=ey;
 %% Heat equation
 heat_equation=parameters(23);
 if heat_equation>1
 [T]=SolveHeat(f,phy_const,Grid_S,parameters,time);
 else
-T=ones(size(Grid_S))*300;
+T_ambient = parameters(3);
+T=ones(size(Grid_S))*T_ambient;
 end
 v_temperature(j,1)=mean(mean(T));
 v_temperature(j,2)=max(max(T));
@@ -159,8 +160,13 @@ R_ratio(8,7)=std(abs(R_ratio(7,1:m/2-1)-R_ratio(7,2:m/2)));
 
 end
 
-function [V_initial,T_ambient,time,delta_t,delta_V,Vmax,Vmin,n_RS,square_size,v_resistance,v_density_Vs,v_total_res,v_current,v_time,voltage,v_temperature,R_ratio,V_set_reset,cont_SET_RESET,j,i,tmax,v_curr_map,v_den_map,v_ey,v_res_map]=variables_counters(parameters,Grid_S)
+function [V_initial,T_ambient,time,delta_t,delta_V,Vmax,Vmin,n_RS,square_size,v_resistance,v_density_Vs,v_total_res,v_current,v_time,voltage,v_temperature,R_ratio,V_set_reset,cont_SET_RESET,j,i,tmax,v_curr_map,v_den_map,v_ey,v_res_map,u]=variables_counters(parameters,Grid_S)
+
+ni=size(Grid_S,1);
+nj=size(Grid_S,2);
+
 V_initial=parameters(2);
+u=zeros(ni,nj); % Electric potential
 T_ambient=parameters(3);
 time(1)=parameters(4);
 time(2)=0;
@@ -178,8 +184,8 @@ size_vectors=100;
 end
 % Important variables
 if square_size==0
-v_resistance=zeros(size(Grid_S,2),size_vectors);
-v_density_Vs=zeros(size(Grid_S,2),size_vectors);
+v_resistance=zeros(nj,size_vectors);
+v_density_Vs=zeros(nj,size_vectors);
 else
 %v_resistance=zeros(size(Grid_S,2)/square_size,size_vectors);
 %v_density_Vs=zeros(size(Grid_S,2)/square_size,size_vectors);
@@ -187,13 +193,13 @@ else
 %v_den_map=zeros(size(Grid_S,1)/square_size,size(Grid_S,2)/square_size,size_vectors);
 
 % Continuous density
-v_resistance=zeros(size(Grid_S,2),size_vectors);
-v_density_Vs=zeros(size(Grid_S,2),size_vectors);
-v_curr_map=zeros(size(Grid_S,1),size(Grid_S,2),size_vectors);
-v_den_map=zeros(size(Grid_S,1),size(Grid_S,2),size_vectors);
-v_res_map=zeros(size(Grid_S,1),size(Grid_S,2),size_vectors);
+v_resistance=zeros(nj,size_vectors);
+v_density_Vs=zeros(nj,size_vectors);
+v_curr_map=zeros(ni,nj,size_vectors);
+v_den_map=zeros(ni,nj,size_vectors);
+v_res_map=zeros(ni,nj,size_vectors);
 
-v_ey=zeros(size(Grid_S,1),size(Grid_S,2),size_vectors);
+v_ey=zeros(ni,nj,size_vectors);
 end
 
 v_total_res=zeros(size_vectors,1);

@@ -133,7 +133,7 @@ kurt=4.4;
 x=-2:0.01:2;
 y=pearspdf(mean+x,mean,standard_deviation,skew,kurt)/100;
 max_probability=max(y);
-max_dose=0.48/max_probability;
+max_dose=1/max_probability;
 irradiation_position=round(nj/2)+1;
 parameter_seed(1)=mean;
 parameter_seed(2)=standard_deviation;
@@ -302,13 +302,13 @@ time=0;
 delta_t=1;
 % Delta V (V)
 %delta_V=0.714;
-delta_V=0.714;
+delta_V=2.1;
 % Vmax during RESET (V)
 Vmax=35;
 % Vmin during SET (V)
 Vmin=-35;
 % Number of Resistive Switching Cycles
-n_RS=1;
+n_RS=2;
 % Polarity
 % Polarity = 1 --> y=0 --> V
 %                  y=L --> 0
@@ -457,7 +457,7 @@ parameters(22)=quenching_heat;
 parameters(23)=heat_equation;
 
 %%%%%%%%%%%%%%%%% Saving --> properties %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-destiny_direction='C:\Users\aldanads\OneDrive - TCDUD.onmicrosoft.com\2D device simulator project\Publications\Simulator MoS2\Simulations_continuos density\1 branch\Stoichiometry\';
+destiny_direction='C:\Users\aldanads\OneDrive - TCDUD.onmicrosoft.com\2D device simulator project\Publications\Failure mechanism - thermal\Failure mechanism\';
 folder_name=strcat(num2str(parameters(10)),'RS_Sim_',num2str(n_sim));
 [direction_vac,direction_phy_pl,direction_data]=save_files(destiny_direction,folder_name);
 
@@ -472,7 +472,7 @@ folder_name=strcat(num2str(parameters(10)),'RS_Sim_',num2str(n_sim));
 % Advanced Functional Materials, 29(25), 1901106. 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Movements
-mov_actE=2.297;
+mov_actE=2.13;
 % Double vacancy
 doub_mov=4.149;
 
