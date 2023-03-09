@@ -19,7 +19,6 @@ for n_sim=2:max_sim
 
 [V_initial,time,delta_t,delta_V,Vmax,Vmin,n_RS,square_size,v_resistance,v_density_Vs,v_total_res,v_current,v_time,voltage,v_temperature,R_ratio,V_set_reset,cont_SET_RESET,j,i,tmax,v_curr_map,v_den_map,v_ey,v_res_map,u,T]=variables_counters(parameters,Grid_S);
 
-
 % Number of RS cycles
 for cycle=1:n_RS
 

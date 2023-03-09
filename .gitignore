@@ -1,4 +1,6 @@
-
 Data/
 Auxiliar functions/
-
+*.asv
+exp_sim_fit.m
+resistivity.m
+Schottky_barrier.m

@@ -715,38 +715,34 @@ ActE(6)=doub_mov;
         direction_data=strcat(destiny_direction,'\',folder_name,'\Data\');
         mkdir(direction_data,'Program');
         
-        path = strcat(direction_data,'Program\initialization.m');
-        % Save the code
-        copyfile('initialization.m', path)
-        %% Finish 
-        %copyfile hex_grid.m strcat(direction_data,'Program\hex_grid.m')
-        %copyfile density_row.m strcat(direction_data,'Program\density_row.m')
-        %copyfile KMC.m strcat(direction_data,'Program\KMC.m')
-        %copyfile plot_graphs.m strcat(direction_data,'Program\plot_graphs.m')
-        %copyfile seed_defects.m strcat(direction_data,'Program\seed_defects.m')
-        %copyfile simulator_core.m strcat(direction_data,'Program\simulator_core.m')
-        %copyfile SolvePotentialAndField.m strcat(direction_data,'Program\SolvePotentialAndField.m')
-        %copyfile pearspdf.m strcat(direction_data,'Program\pearspdf.m')
 
-            
-        %direction_f=strcat(direction_data,'Program\initialization.m');
-        %save(direction_f);
-        %direction_f=strcat(direction_data,'Program\hex_grid.m');
-        %save(direction_f);
-        %direction_f=strcat(direction_data,'Program\density_row.m');
-        %save(direction_f);
-        %direction_f=strcat(direction_data,'Program\KMC.m');
-        %save(direction_f);
-        %direction_f=strcat(direction_data,'Program\plot_graphs.m');
-        %save(direction_f);
-        %direction_f=strcat(direction_data,'Program\seed_defects.m');
-        %save(direction_f);
-        %direction_f=strcat(direction_data,'Program\simulator_core.m');
-        %save(direction_f);
-        %direction_f=strcat(direction_data,'Program\SolvePotentialAndField.m');
-        %save(direction_f);
-        %direction_f=strcat(direction_data,'Program\pearspdf.m');
-        %save(direction_f);
+        % Save the code
+        path = strcat(direction_data,'Program\initialization.m');
+        copyfile('initialization.m', path)
+
+        path = strcat(direction_data,'Program\hex_grid.m');
+        copyfile('hex_grid.m', path)
+
+        path = strcat(direction_data,'Program\density.m');
+        copyfile('density.m', path)
+
+        path = strcat(direction_data,'Program\KMC.m');
+        copyfile('KMC.m', path)
+
+        path = strcat(direction_data,'Program\plot_graphs.m');
+        copyfile('plot_graphs.m', path)
+
+        path = strcat(direction_data,'Program\seed_defects.m');
+        copyfile('seed_defects.m', path)
+
+        path = strcat(direction_data,'Program\simulator_core.m');
+        copyfile('simulator_core.m', path)
+
+        path = strcat(direction_data,'Program\SolvePotentialAndField.m');
+        copyfile('SolvePotentialAndField.m', path)
+
+        path = strcat(direction_data,'Program\pearspdf.m');
+        copyfile('pearspdf.m', path)
           
     end
 
