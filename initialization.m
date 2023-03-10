@@ -125,8 +125,8 @@ half_damaged_region=(2+0.5*4)*1E-9;
 skew=1.2;
 
 % Kurt must be greater than the square of skew + 1
-%kurt=6;
 kurt=4.4;
+%kurt=4+0.2*n_sim;
 
 % Probability peak at the mean of the distribution
 %max_probability=normpdf(mean,mean,standard_deviation)/100;
@@ -297,13 +297,11 @@ T_experiment = 358.15;
 T_top_electrode=T_experiment;
 T_bottom_electrode=T_experiment;
 
-% Annealing time: (s) 
-day = 60*60*24;
-experiment_time = [day,day*7,day*30,day*30*6,day*30*12,day*30*12*10];
-annealing_time = experiment_time(n_sim);
+% Degradation level of the resistance --> 0.1 means a degradation of 90%
+degradation_level = 0.95;
 % Type of experiment: Thermal annealing: thermal - experiment = 1
 % Voltage ramp: ramp - experiment = 2
-experiment = 1;
+experiment = 2;
 
 % Time (s)
 time=0;
@@ -317,7 +315,7 @@ Vmax=35;
 % Vmin during SET (V)
 Vmin=-35;
 % Number of Resistive Switching Cycles
-n_RS=2;
+n_RS=1;
 % Polarity
 % Polarity = 1 --> y=0 --> V
 %                  y=L --> 0
@@ -466,14 +464,10 @@ parameters(22)=quenching_heat;
 parameters(23)=heat_equation;
 parameters(24)=experiment;
 parameters(25) = T_experiment;
-parameters(26) = annealing_time; 
+parameters(26) = degradation_level; 
 
 %%%%%%%%%%%%%%%%% Saving --> properties %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if contains(computer,'WIN')
-    destiny_direction='C:\Users\aldanads\OneDrive - TCDUD.onmicrosoft.com\2D device simulator project\Publications\Failure mechanism - thermal\Failure mechanism\KMC1\Thermal_loop\';
-elseif contains(computer,'GLNXA64')
-    destiny_direction='/home/users/aldanads/Memristor/Simulations/Heat_RS\';
-end
+destiny_direction='C:\Users\aldanads\OneDrive - TCDUD.onmicrosoft.com\2D device simulator project\Publications\Failure mechanism - thermal\Failure mechanism\KMC2_test\';
 folder_name=strcat(num2str(parameters(10)),'RS_Sim_',num2str(n_sim));
 [direction_vac,direction_phy_pl,direction_data]=save_files(destiny_direction,folder_name);
 
@@ -496,7 +490,7 @@ doub_mov=4.149;
 
 
 % Movement limitation
-mov_lim=0.5;
+mov_lim=0.8;
 
 % Toward up 
 ActE(1)=mov_actE;
@@ -748,19 +742,6 @@ ActE(6)=doub_mov;
 
         path = strcat(direction_data,'Program\pearspdf.m');
         copyfile('pearspdf.m', path)
-
-        path = strcat(direction_data,'Program\current.m');
-        copyfile('current.m', path)
-
-        path = strcat(direction_data,'Program\measure.m');
-        copyfile('measure.m', path)
-
-        path = strcat(direction_data,'Program\resistance_calculation.m');
-        copyfile('resistance_calculation.m', path)
-
-        path = strcat(direction_data,'Program\SolveHeat.m');
-        copyfile('SolveHeat.m', path)
-
           
     end
 

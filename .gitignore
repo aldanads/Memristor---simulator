@@ -1,7 +1,6 @@
 Data/
 Auxiliar functions/
 kMC2/
+Master/
 *.asv
-exp_sim_fit.m
-resistivity.m
-Schottky_barrier.m
+

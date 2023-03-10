@@ -9,16 +9,20 @@
 %% Purpose: This function is the kinetic Monte Carlo algorithm. 
 %% This algorithm is used to select the occurring events.
 
-function [Grid_S,time,Vs_ij,prob]=KMC(Grid_S,phy_const,Vs_ij,ex,ey,ActE,T,time,parameters,delta_V)
+function [Grid_S,time,Vs_ij,prob]=KMC(Grid_S,phy_const,Vs_ij,ex,ey,ActE,T,time,parameters,tmax)
 
-%Time max for step -> The event with bigger time step
-time_max=0;
+
 %-> delta_t=parameters(5);
 delta_t=parameters(5);
-annealing_time = parameters(26);
 
-% Probability of each process
-prob=zeros(1,4);
+
+
+% We run size(Vs_ij) kMC steps before we update the electric field
+for r = 1:size(Vs_ij)
+
+    % Probability of each process
+    prob=zeros(1,4);
+    v_TR = zeros(size(Vs_ij,1) * 3,4);
 
 for i=1:size(Vs_ij,1)
 
@@ -58,59 +62,66 @@ for i=1:size(Vs_ij,1)
     if (mov_banner(3)==1)
         TR(3)=Trans_Rate(ActE(3),T(Vs_ij(i,1),Vs_ij(i,2)),phy_const(1));
     end
-    %% We sum all the transition rates and we multiply by a random number. 
-    %% This is, we select a point in a bar whose length is the sum of all TRs.
-    sumTR=sum(TR)*rand;
-    %% Continue to the next iteration of the loop 
-    if (sumTR==0)
-        continue;
-    end
-    
-    %% We select the event through kMC algorithm
-    aux=TR(1);
-    s=1;
-    while (aux<=sumTR)
-         s=s+1;
-         aux=aux+TR(s);
-    end
-    %% Time for at least one occurring event
-    time(2)=-log(rand)/sum(TR);
-    
-    if delta_V ~= 0
-    if time(2)>delta_t
-        time(2)=-log(rand)/TR(s);
-        
-        if time(2)>delta_t
-           time(2)=delta_t; 
-        end
-    end
-    %The event with bigger time step
-    if time(2)>time_max
-       time_max=time(2); 
-    end
 
-    else 
-        if time(1)+time(2) > annealing_time
-            time(2) = annealing_time - time(1);
-        end
-    
-    end
-    
-    P=1-exp(-TR(s)*time(2));
-    if (rand<P)
-    prob(s)=prob(s)+1;
-    prob(4)=prob(4)+1;
-    [Grid_S,Vs_ij]=processes(Grid_S,i,Vs_ij,s,mov_banner(4));
-    end
-
+    v_TR(i:i+2,1) = TR; % Transition rates
+    v_TR(i:i+2,2) = i; % Label for the particle in Vs_ij
+    v_TR(i:i+2,3) = 1:3; % Type of event
+    v_TR(i:i+2,4) = mov_banner(4); % Left or right particle
 end
 
-% Update time
-time(1)=time(1)+time(2);
-if prob(4)>0
-prob(1)=prob(1)/prob(4);
-prob(2)=prob(2)/prob(4);
-prob(3)=prob(3)/prob(4);
+    v_TR = sortrows(v_TR,1);
+    v_TR = num2cell(v_TR,2); % Convert into cell
+
+
+    TR_tree = build_tree(v_TR); % Tree data structure
+    sumTR = update_data(TR_tree); % Every node is the sum of their children
+    if isempty(sumTR)
+        break
+    end
+    
+    % Binary search the occuring event among all the possible events 
+    chosen_event = search_value(sumTR,sumTR.data * rand);
+    ptr = chosen_event{1}(2);
+    type_event = chosen_event{1}(3);
+    mov_banner = chosen_event{1}(4);
+
+    time(2) = -log(rand)/sumTR.data;
+
+
+    % In case the event chosen is bigger than the time for changing the
+    % voltage
+    if time(2)>delta_t
+        time(2)=delta_t; 
+        
+        TR_event = chosen_event{1}(1);
+        % In this case, the event may not happen
+        P=1-exp(-TR_event*time(2));
+        if (rand<P)
+        prob(type_event)=prob(type_event)+1;
+        prob(4)=prob(4)+1;
+        [Grid_S,Vs_ij]=processes(Grid_S,ptr,Vs_ij,type_event,mov_banner);
+        end
+    else
+        prob(type_event)=prob(type_event)+1;
+        prob(4)=prob(4)+1;
+        [Grid_S,Vs_ij]=processes(Grid_S,ptr,Vs_ij,type_event,mov_banner);
+    end 
+    
+
+
+
+
+    % Update time
+    time(1)=time(1)+time(2);
+    if prob(4)>0
+    prob(1)=prob(1)/prob(4);
+    prob(2)=prob(2)/prob(4);
+    prob(3)=prob(3)/prob(4);
+    end
+    
+    if time(1) >= tmax
+        break
+    end
 end
 
 %% Processes involved in the system --> We apply the event selected by kMC
