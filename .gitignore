@@ -1,5 +1,6 @@
 Data/
 Auxiliar functions/
+kMC2/
 *.asv
 exp_sim_fit.m
 resistivity.m

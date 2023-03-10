@@ -12,8 +12,8 @@
 %This is necessary to obtain different random numbers for each session of MATLAB
 rng('shuffle','twister');
 
-max_sim=2;
-for n_sim=2:max_sim
+max_sim=6;
+for n_sim=1:max_sim
 
 [Grid_S,phy_const,ActE,Nparticles,Vs_ij,parameters,direction_vac,direction_phy_pl,direction_data,res_fit_parameters,screening_fit_parameters,resistance_limits,den_res]=initialization(n_sim);
 
@@ -53,9 +53,9 @@ while (carry_on)
     end
 
 V=V_initial+(i-1)*delta_V;
-tmax=tmax+delta_t;
+%tmax=tmax+delta_t;
 V, j
-while time(1)<tmax
+%while time(1)<tmax
 
 voltage(j)=V;
 
@@ -84,7 +84,7 @@ v_temperature(j,2)
 [Grid_S,time,Vs_ij,prob]=KMC(Grid_S,phy_const,Vs_ij,ex,ey,ActE,T,time,parameters,delta_V);
 
 
-end
+%end
 
 switch s
     
@@ -93,8 +93,9 @@ switch s
 
         % When the resistance degradate that amount, we stop the annealing
         % experiment and start the voltage ramp exp
-        % parameters(26) = degradation level
-        if (v_total_res(j) <= v_total_res(1)*parameters(26)) && (parameters(24) == 11 || parameters(24) == 1)
+        % parameters(26) = degradation level // annealing_time
+        %if (v_total_res(j) <= v_total_res(1)*parameters(26)) && (parameters(24) == 11 || parameters(24) == 1)
+        if (time(1) >= parameters(26)) && (parameters(24) == 11 || parameters(24) == 1)
         parameters(24) = 2; % experiment(1)
         end
 
@@ -136,7 +137,9 @@ if (V==0)
     R_ratio(4,1)=0;
     R_ratio(4,2)=0;
 end
+if parameters(24) == 2
 [R_ratio,V_set_reset]=measure(R_ratio,voltage,delta_V,v_resistance,j,V_set_reset,cont_SET_RESET);
+end
 
 
 %% Plot the movements of the vacancies

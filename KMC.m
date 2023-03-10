@@ -15,6 +15,7 @@ function [Grid_S,time,Vs_ij,prob]=KMC(Grid_S,phy_const,Vs_ij,ex,ey,ActE,T,time,p
 time_max=0;
 %-> delta_t=parameters(5);
 delta_t=parameters(5);
+annealing_time = parameters(26);
 
 % Probability of each process
 prob=zeros(1,4);
@@ -87,6 +88,12 @@ for i=1:size(Vs_ij,1)
     if time(2)>time_max
        time_max=time(2); 
     end
+
+    else 
+        if time(1)+time(2) > annealing_time
+            time(2) = annealing_time - time(1);
+        end
+    
     end
     
     P=1-exp(-TR(s)*time(2));
