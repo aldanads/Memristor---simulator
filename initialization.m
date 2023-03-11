@@ -321,7 +321,7 @@ n_RS=1;
 %                  y=L --> 0
 % Polarity = -1 --> y=0 --> 0
 %                  y=L --> V
-polarity=1;
+polarity=-1;
 
 % Number of rows to calculate the density
 n_rows_density=3;

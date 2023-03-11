@@ -50,7 +50,7 @@ for i=1:size(Vs_ij,1)
     end
     
     [ActE]=Act_energy(ActE,mov_banner,phy_const,E_field_x,E_field_y);
- 
+    
     if (mov_banner(1)==1)
         TR(1)=Trans_Rate(ActE(1),T(Vs_ij(i,1),Vs_ij(i,2)),phy_const(1));
     end
@@ -63,10 +63,10 @@ for i=1:size(Vs_ij,1)
         TR(3)=Trans_Rate(ActE(3),T(Vs_ij(i,1),Vs_ij(i,2)),phy_const(1));
     end
 
-    v_TR(i:i+2,1) = TR; % Transition rates
-    v_TR(i:i+2,2) = i; % Label for the particle in Vs_ij
-    v_TR(i:i+2,3) = 1:3; % Type of event
-    v_TR(i:i+2,4) = mov_banner(4); % Left or right particle
+    v_TR(1+(i-1)*3:i*3,1) = TR; % Transition rates
+    v_TR(1+(i-1)*3:i*3,2) = i; % Label for the particle in Vs_ij
+    v_TR(1+(i-1)*3:i*3,3) = 1:3; % Type of event
+    v_TR(1+(i-1)*3:i*3,4) = mov_banner(4); % Left or right particle
 end
 
     v_TR = sortrows(v_TR,1);
@@ -83,10 +83,9 @@ end
     chosen_event = search_value(sumTR,sumTR.data * rand);
     ptr = chosen_event{1}(2);
     type_event = chosen_event{1}(3);
-    mov_banner = chosen_event{1}(4);
+    aux_mov_banner = chosen_event{1}(4);
 
     time(2) = -log(rand)/sumTR.data;
-
 
     % In case the event chosen is bigger than the time for changing the
     % voltage
@@ -99,12 +98,12 @@ end
         if (rand<P)
         prob(type_event)=prob(type_event)+1;
         prob(4)=prob(4)+1;
-        [Grid_S,Vs_ij]=processes(Grid_S,ptr,Vs_ij,type_event,mov_banner);
+        [Grid_S,Vs_ij]=processes(Grid_S,ptr,Vs_ij,type_event,aux_mov_banner);
         end
     else
         prob(type_event)=prob(type_event)+1;
         prob(4)=prob(4)+1;
-        [Grid_S,Vs_ij]=processes(Grid_S,ptr,Vs_ij,type_event,mov_banner);
+        [Grid_S,Vs_ij]=processes(Grid_S,ptr,Vs_ij,type_event,aux_mov_banner);
     end 
     
 
