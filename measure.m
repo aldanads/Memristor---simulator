@@ -1,11 +1,11 @@
-function [R_ratio,V_set_reset]=measure(R_ratio,voltage,delta_V,v_resistivity,j,V_set_reset,cont_SET_RESET)
+function [R_ratio,V_set_reset]=measure(R_ratio,voltage,delta_V,v_resistance,j,V_set_reset,cont_SET_RESET)
 
-sum_res_j=sum(v_resistivity(:,j));
+sum_res_j=sum(v_resistance(:,j));
 
 [R_ratio]=R_ratio_linear(voltage,delta_V,cont_SET_RESET,R_ratio,sum_res_j,j);
 
 if j>1
-[V_set_reset]=Looking_for_V_set_reset(v_resistivity,voltage,sum_res_j,V_set_reset,cont_SET_RESET,j);
+[V_set_reset]=Looking_for_V_set_reset(v_resistance,voltage,sum_res_j,V_set_reset,cont_SET_RESET,j);
 end
 
 
@@ -41,10 +41,10 @@ R_ratio(4,2)=1;
 end
 end
 
-function [V_set_reset]=Looking_for_V_set_reset(v_resistivity,voltage,sum_res_j,V_set_reset,cont_SET_RESET,j)
+function [V_set_reset]=Looking_for_V_set_reset(v_resistance,voltage,sum_res_j,V_set_reset,cont_SET_RESET,j)
 
 % Percentage of resistance difference
-dif_res=(sum(v_resistivity(:,j-1))-sum_res_j)/sum_res_j;
+dif_res=(sum(v_resistance(:,j-1))-sum_res_j)/sum_res_j;
 
 % It mays change between ON and OFF state many times in each branch, so if
 % a SET occurs, I allow to save a new RESET. If a RESET occurs, I allow to

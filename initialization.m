@@ -202,9 +202,9 @@ q=2;
 screnning=0.0015;
 % Screening of the electric field due to the defects concentration
 %screnning_max=0.04+0.01*n_sim;
-screnning_max=0.073;
-screening_min=1;
-%screening_min=0.68;
+screnning_max=0.08;
+%screening_min=1;
+screening_min=0.9;
 
 
 %% Relative permittivity of MoS2 --> %%%%%%%%%%%%%%%%%%%%
@@ -293,35 +293,49 @@ V_initial=0;
 
 % Temperature (K) T = 358.15 K = 85 celsius
 T_ambient=300;
-T_experiment = 358.15;
+T_experiment = 500;
 T_top_electrode=T_experiment;
 T_bottom_electrode=T_experiment;
 
-% Degradation level of the resistance --> 0.1 means a degradation of 90%
-degradation_level = 0.95;
-% Type of experiment: Thermal annealing: thermal - experiment = 1
+
+% Type of experiment: Thermal annealing: thermal + loop - experiment = 1
 % Voltage ramp: ramp - experiment = 2
-experiment = 2;
+experiment = 1;
+no_ramp = false;
+
+if experiment == 1
+    % Annealing time: (s) 
+    day = 60*60*24;
+    experiment_time = [day,day*7,day*30,day*30*6,day*30*12,day*30*12*10];
+    annealing_time = experiment_time(n_sim);
+else
+    annealing_time = 0;
+end
 
 % Time (s)
 time=0;
 % Delta time (s)
 delta_t=1;
 % Delta V (V)
-delta_V=0.714;
-%delta_V=2.1;
+%delta_V=0.714;
+delta_V=2.1;
 % Vmax during RESET (V)
+if no_ramp == true
+Vmax = 0;
+Vmin = 0;
+else
 Vmax=35;
 % Vmin during SET (V)
 Vmin=-35;
+end
 % Number of Resistive Switching Cycles
-n_RS=1;
+n_RS=2;
 % Polarity
 % Polarity = 1 --> y=0 --> V
 %                  y=L --> 0
 % Polarity = -1 --> y=0 --> 0
 %                  y=L --> V
-polarity=-1;
+polarity=1;
 
 % Number of rows to calculate the density
 n_rows_density=3;
@@ -464,10 +478,14 @@ parameters(22)=quenching_heat;
 parameters(23)=heat_equation;
 parameters(24)=experiment;
 parameters(25) = T_experiment;
-parameters(26) = degradation_level; 
+parameters(26) = annealing_time; 
 
 %%%%%%%%%%%%%%%%% Saving --> properties %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-destiny_direction='C:\Users\aldanads\OneDrive - TCDUD.onmicrosoft.com\2D device simulator project\Publications\Failure mechanism - thermal\Failure mechanism\KMC2_test\';
+if contains(computer,'WIN')
+    destiny_direction='C:\Users\aldanads\OneDrive - TCDUD.onmicrosoft.com\2D device simulator project\Publications\Failure mechanism - thermal\Failure mechanism\KMC2\Heat + loop\500K\';
+elseif contains(computer,'GLNXA64')
+    destiny_direction='/home/users/aldanads/Memristor/Simulations/Heat_RS/';
+end
 folder_name=strcat(num2str(parameters(10)),'RS_Sim_',num2str(n_sim));
 [direction_vac,direction_phy_pl,direction_data]=save_files(destiny_direction,folder_name);
 
@@ -490,7 +508,7 @@ doub_mov=4.149;
 
 
 % Movement limitation
-mov_lim=0.8;
+mov_lim=0.85;
 
 % Toward up 
 ActE(1)=mov_actE;
@@ -703,6 +721,7 @@ ActE(6)=doub_mov;
 %% Function for data
     function [direction_vac,direction_phy_pl,direction_data]=save_files(destiny_direction,folder_name)
         
+        if contains(computer,'WIN') 
         % Create a few folders
         mkdir(destiny_direction,folder_name);
         destiny_folder=strcat(destiny_direction,'\',folder_name,'\');
@@ -742,6 +761,80 @@ ActE(6)=doub_mov;
 
         path = strcat(direction_data,'Program\pearspdf.m');
         copyfile('pearspdf.m', path)
+
+        path = strcat(direction_data,'Program\current.m');
+        copyfile('current.m', path)
+
+        path = strcat(direction_data,'Program\measure.m');
+        copyfile('measure.m', path)
+
+        path = strcat(direction_data,'Program\resistance_calculation.m');
+        copyfile('resistance_calculation.m', path)
+
+        path = strcat(direction_data,'Program\SolveHeat.m');
+        copyfile('SolveHeat.m', path)
+
+        elseif contains(computer,'GLNXA64')
+
+        % Create a few folders
+        mkdir(destiny_direction,folder_name);
+        destiny_folder=strcat(destiny_direction,'/',folder_name,'/');
+        mkdir(destiny_folder,'Data');
+        mkdir(destiny_folder,'Vac_mov');
+        direction_vac=strcat(destiny_folder,'/Vac_mov/');
+        mkdir(destiny_folder,'Phy_plots');
+        direction_phy_pl=strcat(destiny_folder,'/Phy_plots/');
+        direction_data=strcat(destiny_direction,'/',folder_name,'/Data/');
+        mkdir(direction_data,'Program');
+        
+
+        % Save the code
+        path = strcat(direction_data,'Program/initialization.m');
+        copyfile('initialization.m', path)
+
+        path = strcat(direction_data,'Program/hex_grid.m');
+        copyfile('hex_grid.m', path)
+
+        path = strcat(direction_data,'Program/density.m');
+        copyfile('density.m', path)
+
+        path = strcat(direction_data,'Program/KMC.m');
+        copyfile('KMC.m', path)
+
+        path = strcat(direction_data,'Program/plot_graphs.m');
+        copyfile('plot_graphs.m', path)
+
+        path = strcat(direction_data,'Program/seed_defects.m');
+        copyfile('seed_defects.m', path)
+
+        path = strcat(direction_data,'Program/simulator_core.m');
+        copyfile('simulator_core.m', path)
+
+        path = strcat(direction_data,'Program/SolvePotentialAndField.m');
+        copyfile('SolvePotentialAndField.m', path)
+
+        path = strcat(direction_data,'Program/pearspdf.m');
+        copyfile('pearspdf.m', path)
+
+        path = strcat(direction_data,'Program/current.m');
+        copyfile('current.m', path)
+
+        path = strcat(direction_data,'Program/measure.m');
+        copyfile('measure.m', path)
+
+        path = strcat(direction_data,'Program/resistance_calculation.m');
+        copyfile('resistance_calculation.m', path)
+
+        path = strcat(direction_data,'Program/SolveHeat.m');
+        copyfile('SolveHeat.m', path)
+
+        path = strcat(direction_data,'Program/variables_counters.m');
+        copyfile('variables_counters.m', path)
+
+        path = strcat(direction_data,'Program/statistics_R_ratio.m');
+        copyfile('statistics_R_ratio.m', path)
+
+        end
           
     end
 

@@ -13,7 +13,11 @@ function [Grid_S,time,Vs_ij,prob]=KMC(Grid_S,phy_const,Vs_ij,ex,ey,ActE,T,time,p
 
 
 %-> delta_t=parameters(5);
-delta_t=parameters(5);
+if parameters(24) == 1 || parameters(24) == 11
+    delta_t = parameters(26);
+elseif parameters(24) == 2 || parameters(24) == 22
+    delta_t = parameters(5);
+end
 
 
 
@@ -89,8 +93,13 @@ end
 
     % In case the event chosen is bigger than the time for changing the
     % voltage
-    if time(2)>delta_t
-        time(2)=delta_t; 
+    %if time(2)>delta_t
+        %time(2)=delta_t; 
+
+    if time(1) + time(2) > tmax
+
+        time(2) = tmax - time(1);
+           
         
         TR_event = chosen_event{1}(1);
         % In this case, the event may not happen
@@ -119,6 +128,7 @@ end
     end
     
     if time(1) >= tmax
+        time(1) = tmax;
         break
     end
 end
