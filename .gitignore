@@ -6,3 +6,4 @@ Master/
 exp_sim_fit.m
 resistivity.m
 Schottky_barrier.m
+memristor.sh

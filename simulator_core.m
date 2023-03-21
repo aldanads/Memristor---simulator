@@ -31,6 +31,10 @@ for s=1:2
 
 carry_on=true;
 
+    if (parameters(24) == 2) && (Vmax-Vmin) == 0
+        break
+    end
+
 while (carry_on)
 
     %% ACTIVATE AND DESACTIVE ANNEALING AND VOLTAGE RAMP EXPERIMENT
@@ -56,6 +60,7 @@ while (carry_on)
 
 V=V_initial+(i-1)*delta_V;
 tmax=tmax+delta_t;
+j
 
 while time(1)<tmax
 
@@ -84,6 +89,9 @@ v_temperature(j,2)=max(max(T));
 %% KMC algorithm
 [Grid_S,time,Vs_ij,prob]=KMC(Grid_S,phy_const,Vs_ij,ex,ey,ActE,T,time,parameters,tmax);
 
+    if (parameters(24) == 1 || parameters(24) == 11) % Heat experiment
+        break
+    end
 
 end
 
@@ -95,13 +103,19 @@ switch s
         % When the resistance degradate that amount, we stop the annealing
         % experiment and start the voltage ramp exp
         % parameters(26) = degradation level
-        %if (v_total_res(j) <= v_total_res(1)*parameters(26)) && (parameters(24) == 11 || parameters(24) == 1)
-        if (time(1) >= parameters(26)) && (parameters(24) == 11 || parameters(24) == 1)
+        if (Vmax-Vmin) == 0
+            if (v_total_res(j) <= v_total_res(1)*parameters(27)) && (parameters(24) == 11 || parameters(24) == 1)
+                parameters(24) = 2; % experiment(1)
+                carry_on=false;
+            end
 
-        parameters(24) = 2; % experiment(1)
+        else
+            if (time(1) >= parameters(26)) && (parameters(24) == 11 || parameters(24) == 1)
+            parameters(24) = 2; % experiment(1)
+            end
         end
 
-        if V>=Vmax
+        if (V>=Vmax) && (parameters(24) == 22 || parameters(24) == 2)
         i=1;
         delta_V=-delta_V;
         V_initial=V;
@@ -115,7 +129,7 @@ switch s
         
     % When V min is reached, go until 0
     case 2
-        if V<=Vmin
+        if (V<=Vmin) && (parameters(24) == 22 || parameters(24) == 2)
         i=1;
         delta_V=-delta_V;
         V_initial=V;
@@ -130,7 +144,7 @@ end
 
 
 %% Vector of time
-v_time(j)=time(1);
+v_time(j+1)=time(1);
 %% Vector of voltage
 
 % Only one SET and RESET voltage for each branch

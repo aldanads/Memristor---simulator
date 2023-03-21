@@ -13,17 +13,16 @@ function [Grid_S,time,Vs_ij,prob]=KMC(Grid_S,phy_const,Vs_ij,ex,ey,ActE,T,time,p
 
 
 %-> delta_t=parameters(5);
-if parameters(24) == 1 || parameters(24) == 11
-    delta_t = parameters(26);
-elseif parameters(24) == 2 || parameters(24) == 22
-    delta_t = parameters(5);
-end
+%if parameters(24) == 1 || parameters(24) == 11
+%    delta_t = parameters(26);
+%elseif parameters(24) == 2 || parameters(24) == 22
+%    delta_t = parameters(5);
+%end
 
 
 
 % We run size(Vs_ij) kMC steps before we update the electric field
-for r = 1:size(Vs_ij)
-
+for r = 1:round(size(Vs_ij)/4)
     % Probability of each process
     prob=zeros(1,4);
     v_TR = zeros(size(Vs_ij,1) * 3,4);
@@ -80,7 +79,7 @@ end
     TR_tree = build_tree(v_TR); % Tree data structure
     sumTR = update_data(TR_tree); % Every node is the sum of their children
     if isempty(sumTR)
-        break
+        %break
     end
     
     % Binary search the occuring event among all the possible events 
@@ -96,7 +95,7 @@ end
     %if time(2)>delta_t
         %time(2)=delta_t; 
 
-    if time(1) + time(2) > tmax
+    if (time(1) + time(2) > tmax) && (parameters(24) == 2 || parameters(24) == 22)
 
         time(2) = tmax - time(1);
            

@@ -293,7 +293,9 @@ V_initial=0;
 
 % Temperature (K) T = 358.15 K = 85 celsius
 T_ambient=300;
-T_experiment = 500;
+sample_T = [350,400,450,500,550,600];
+T_experiment = sample_T(n_sim);
+
 T_top_electrode=T_experiment;
 T_bottom_electrode=T_experiment;
 
@@ -301,12 +303,12 @@ T_bottom_electrode=T_experiment;
 % Type of experiment: Thermal annealing: thermal + loop - experiment = 1
 % Voltage ramp: ramp - experiment = 2
 experiment = 1;
-no_ramp = false;
+no_ramp = true;
 
 if experiment == 1
     % Annealing time: (s) 
     day = 60*60*24;
-    experiment_time = [day,day*7,day*30,day*30*6,day*30*12,day*30*12*10];
+    experiment_time = [60,60*60,day,day*7,day*30,day*30*6,day*30*12,day*30*12*10];
     annealing_time = experiment_time(n_sim);
 else
     annealing_time = 0;
@@ -323,6 +325,8 @@ delta_V=2.1;
 if no_ramp == true
 Vmax = 0;
 Vmin = 0;
+annealing_time = inf;
+res_degradation = 0.03;
 else
 Vmax=35;
 % Vmin during SET (V)
@@ -479,10 +483,11 @@ parameters(23)=heat_equation;
 parameters(24)=experiment;
 parameters(25) = T_experiment;
 parameters(26) = annealing_time; 
+parameters(27) = res_degradation;
 
 %%%%%%%%%%%%%%%%% Saving --> properties %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if contains(computer,'WIN')
-    destiny_direction='C:\Users\aldanads\OneDrive - TCDUD.onmicrosoft.com\2D device simulator project\Publications\Failure mechanism - thermal\Failure mechanism\KMC2\Heat + loop\500K\';
+    destiny_direction='C:\Users\aldanads\OneDrive - TCDUD.onmicrosoft.com\2D device simulator project\Publications\Failure mechanism - thermal\Failure mechanism\KMC2\Thermal failure\Batch_2\';
 elseif contains(computer,'GLNXA64')
     destiny_direction='/home/users/aldanads/Memristor/Simulations/Heat_RS/';
 end
@@ -774,6 +779,25 @@ ActE(6)=doub_mov;
         path = strcat(direction_data,'Program\SolveHeat.m');
         copyfile('SolveHeat.m', path)
 
+        path = strcat(direction_data,'Program\build_tree.m');
+        copyfile('build_tree.m', path)
+
+        path = strcat(direction_data,'Program\Node.m');
+        copyfile('Node.m', path)
+
+        path = strcat(direction_data,'Program\search_value.m');
+        copyfile('search_value.m', path)
+
+        path = strcat(direction_data,'Program\update_data.m');
+        copyfile('update_data.m', path)
+
+        path = strcat(direction_data,'Program\statistics_R_ratio.m');
+        copyfile('statistics_R_ratio.m', path)
+
+        path = strcat(direction_data,'Program\variables_counters.m');
+        copyfile('variables_counters.m', path)
+        
+
         elseif contains(computer,'GLNXA64')
 
         % Create a few folders
@@ -828,11 +852,27 @@ ActE(6)=doub_mov;
         path = strcat(direction_data,'Program/SolveHeat.m');
         copyfile('SolveHeat.m', path)
 
+        path = strcat(direction_data,'Program/build_tree.m');
+        copyfile('build_tree.m', path)
+
+        path = strcat(direction_data,'Program/Node.m');
+        copyfile('Node.m', path)
+
+        path = strcat(direction_data,'Program/search_value.m');
+        copyfile('search_value.m', path)
+
+        path = strcat(direction_data,'Program/update_data.m');
+        copyfile('update_data.m', path)
+
         path = strcat(direction_data,'Program/variables_counters.m');
         copyfile('variables_counters.m', path)
 
         path = strcat(direction_data,'Program/statistics_R_ratio.m');
         copyfile('statistics_R_ratio.m', path)
+
+                
+        
+
 
         end
           
