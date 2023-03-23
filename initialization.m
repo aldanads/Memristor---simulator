@@ -293,8 +293,8 @@ V_initial=0;
 
 % Temperature (K) T = 358.15 K = 85 celsius
 T_ambient=300;
-sample_T = [350,400,450,500,550,600];
-T_experiment = sample_T(n_sim);
+%sample_T = [400,450,500,550,600];
+T_experiment = 600;
 
 T_top_electrode=T_experiment;
 T_bottom_electrode=T_experiment;
@@ -305,7 +305,7 @@ T_bottom_electrode=T_experiment;
 experiment = 1;
 no_ramp = true;
 
-if experiment == 1
+if experiment == 1 && no_ramp == false
     % Annealing time: (s) 
     day = 60*60*24;
     experiment_time = [60,60*60,day,day*7,day*30,day*30*6,day*30*12,day*30*12*10];
@@ -487,7 +487,7 @@ parameters(27) = res_degradation;
 
 %%%%%%%%%%%%%%%%% Saving --> properties %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if contains(computer,'WIN')
-    destiny_direction='C:\Users\aldanads\OneDrive - TCDUD.onmicrosoft.com\2D device simulator project\Publications\Failure mechanism - thermal\Failure mechanism\KMC2\Thermal failure\Batch_2\';
+    destiny_direction='C:\Users\aldanads\OneDrive - TCDUD.onmicrosoft.com\2D device simulator project\Publications\Failure mechanism - thermal\Failure mechanism\KMC2\Fail variability\600K\';
 elseif contains(computer,'GLNXA64')
     destiny_direction='/home/users/aldanads/Memristor/Simulations/Heat_RS/';
 end
@@ -505,11 +505,28 @@ folder_name=strcat(num2str(parameters(10)),'RS_Sim_',num2str(n_sim));
 % Advanced Functional Materials, 29(25), 1901106. 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Movements
-mov_actE=2.297;
+mov_MoS2=2.297;
 % Double vacancy
 doub_mov=4.149;
 
+% MoS2
+mov_MoS2_2=2.43;
+% WS2
+mov_WS2=2.88;
+% MoSe2
+mov_MoSe2=2.13;
+% WSe2
+mov_WSe2=2.56;
 
+TMD_mig_energy(1)=mov_MoS2;
+TMD_mig_energy(2)=mov_MoS2_2;
+TMD_mig_energy(3)=mov_WS2;
+TMD_mig_energy(4)=mov_MoSe2;
+TMD_mig_energy(5)=mov_WSe2;
+
+
+
+mov_actE=TMD_mig_energy(1);
 
 
 % Movement limitation

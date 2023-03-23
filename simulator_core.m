@@ -12,8 +12,8 @@
 %This is necessary to obtain different random numbers for each session of MATLAB
 rng('shuffle','twister');
 
-max_sim=6;
-for n_sim=1:max_sim
+max_sim=10;
+for n_sim=9:max_sim
 
 [Grid_S,phy_const,ActE,Nparticles,Vs_ij,parameters,direction_vac,direction_phy_pl,direction_data,res_fit_parameters,screening_fit_parameters,resistance_limits,den_res]=initialization(n_sim);
 
