@@ -294,7 +294,7 @@ V_initial=0;
 % Temperature (K) T = 358.15 K = 85 celsius
 T_ambient=300;
 %sample_T = [400,450,500,550,600];
-T_experiment = 600;
+T_experiment = 358;
 
 T_top_electrode=T_experiment;
 T_bottom_electrode=T_experiment;
@@ -303,12 +303,12 @@ T_bottom_electrode=T_experiment;
 % Type of experiment: Thermal annealing: thermal + loop - experiment = 1
 % Voltage ramp: ramp - experiment = 2
 experiment = 1;
-no_ramp = true;
+no_ramp = false;
 
 if experiment == 1 && no_ramp == false
     % Annealing time: (s) 
     day = 60*60*24;
-    experiment_time = [60,60*60,day,day*7,day*30,day*30*6,day*30*12,day*30*12*10];
+    experiment_time = [day,day*7,day*30,day*30*6,day*30*12,day*30*12*10];
     annealing_time = experiment_time(n_sim);
 else
     annealing_time = 0;
@@ -331,9 +331,10 @@ else
 Vmax=35;
 % Vmin during SET (V)
 Vmin=-35;
+res_degradation = inf;
 end
 % Number of Resistive Switching Cycles
-n_RS=2;
+n_RS=10;
 % Polarity
 % Polarity = 1 --> y=0 --> V
 %                  y=L --> 0
@@ -487,9 +488,9 @@ parameters(27) = res_degradation;
 
 %%%%%%%%%%%%%%%%% Saving --> properties %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if contains(computer,'WIN')
-    destiny_direction='C:\Users\aldanads\OneDrive - TCDUD.onmicrosoft.com\2D device simulator project\Publications\Failure mechanism - thermal\Failure mechanism\KMC2\Fail variability\600K\';
+    destiny_direction='C:\Users\aldanads\OneDrive - TCDUD.onmicrosoft.com\2D device simulator project\Publications\Failure mechanism - thermal\Failure mechanism\KMC2\Heat + loop\Batch_10cycles\358 K\';
 elseif contains(computer,'GLNXA64')
-    destiny_direction='/home/users/aldanads/Memristor/Simulations/Heat_RS/';
+    destiny_direction='/home/users/aldanads/Memristor/Simulations/Migration energy/E = 2.56 eV/';
 end
 folder_name=strcat(num2str(parameters(10)),'RS_Sim_',num2str(n_sim));
 [direction_vac,direction_phy_pl,direction_data]=save_files(destiny_direction,folder_name);
@@ -526,7 +527,7 @@ TMD_mig_energy(5)=mov_WSe2;
 
 
 
-mov_actE=TMD_mig_energy(1);
+mov_actE=TMD_mig_energy(5);
 
 
 % Movement limitation
